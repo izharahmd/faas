@@ -5,6 +5,7 @@ package types
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"strconv"
@@ -64,6 +65,10 @@ func (ReadConfig) Read(hasEnv HasEnv) (*GatewayConfig, error) {
 	cfg.ReadTimeout = parseIntOrDurationValue(hasEnv.Getenv("read_timeout"), defaultDuration)
 	cfg.WriteTimeout = parseIntOrDurationValue(hasEnv.Getenv("write_timeout"), defaultDuration)
 	cfg.UpstreamTimeout = parseIntOrDurationValue(hasEnv.Getenv("upstream_timeout"), defaultDuration)
+	cfg.FunctionCacheExpiryTimeout = parseIntOrDurationValue(hasEnv.Getenv("fn_cache_expiry_timeout"), time.Second*5)
+	cfg.FunctionCachePollInterval = parseIntOrDurationValue(hasEnv.Getenv("fn_cache_poll_interval"), time.Millisecond*50)
+	log.Printf("FunctionCacheExpiryTimeout %s", cfg.FunctionCacheExpiryTimeout)
+	log.Printf("FunctionCachePollInterval %s", cfg.FunctionCachePollInterval)
 
 	if len(hasEnv.Getenv("functions_provider_url")) > 0 {
 		var err error
@@ -243,6 +248,12 @@ type GatewayConfig struct {
 
 	// Namespace for endpoints
 	Namespace string
+
+	// FunctionCacheExpiryTimeout maximum duration of function scaling cache
+	FunctionCacheExpiryTimeout time.Duration
+
+	// FunctionPollInterval is the interval between subsequent call to refresh function cache
+	FunctionCachePollInterval time.Duration
 }
 
 // UseNATS Use NATSor not

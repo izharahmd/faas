@@ -136,8 +136,8 @@ func main() {
 	scalingConfig := scaling.ScalingConfig{
 		MaxPollCount:         uint(1000),
 		SetScaleRetries:      uint(20),
-		FunctionPollInterval: time.Millisecond * 50,
-		CacheExpiry:          time.Second * 5, // freshness of replica values before going stale
+		FunctionPollInterval: config.FunctionCachePollInterval,
+		CacheExpiry:          config.FunctionCacheExpiryTimeout, // freshness of replica values before going stale
 		ServiceQuery:         externalServiceQuery,
 	}
 
